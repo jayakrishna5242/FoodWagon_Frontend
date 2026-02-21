@@ -1,7 +1,7 @@
 
 import { Restaurant, MenuItem, Order, AuthResponse, User } from '../types';
 
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'https://food-wagon-backend-oc5c.onrender.com/api';
 
 /**
  * HELPER: Get current user from storage to avoid changing component signatures
