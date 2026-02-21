@@ -185,7 +185,7 @@ export const fetchPartnerOrders = async (): Promise<Order[]> => {
 
 export const updateOrderStatus = async (orderId: number, status: Order['status']): Promise<Order> => {
   const response = await fetch(`${BASE_URL}/orders/${orderId}/status`, {
-    method: 'PUT',
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status }),
   });
