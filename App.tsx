@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import RestaurantDetail from './pages/RestaurantDetail';
 import Cart from './pages/Cart';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
 import Profile from './pages/Profile';
 import Search from './pages/Search';
 import Partner from './pages/Partner';
@@ -23,7 +24,7 @@ import { FavoritesProvider } from './context/FavoritesContext';
 
 const Layout = ({ children }: { children?: React.ReactNode }) => {
   const location = useLocation();
-  const hideNavFooterPaths = ['/login', '/partner/login', '/partner/register', '/partner/dashboard'];
+  const hideNavFooterPaths = ['/login', '/forgot-password', '/partner/login', '/partner/register', '/partner/dashboard'];
   const shouldHide = hideNavFooterPaths.includes(location.pathname);
 
   return (
@@ -53,6 +54,7 @@ const App: React.FC = () => {
                       <Route path="/restaurant/:id" element={<RestaurantDetail />} />
                       <Route path="/cart" element={<Cart />} />
                       <Route path="/login" element={<Login />} />
+                      <Route path="/forgot-password" element={<ForgotPassword />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/partner" element={<Partner />} />
                       <Route path="/partner/login" element={<PartnerLogin />} />

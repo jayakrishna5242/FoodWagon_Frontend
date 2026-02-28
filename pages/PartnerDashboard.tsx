@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
-import { fetchPartnerOrders, fetchMenu, fetchPartnerRestaurant, updateRestaurantDetails, addMenuItem, updateOrderStatus } from '../services/api';
+import { fetchPartnerOrders, fetchMenu, fetchPartnerRestaurant, updateRestaurantDetails, addMenuItem, updateOrderStatus,toggleMenuItemStock ,toggleRestaurantStatus} from '../services/api';
 import { Order, MenuItem, Restaurant } from '../types';
 import { 
   Bell, 
@@ -102,16 +102,53 @@ const PartnerDashboard: React.FC = () => {
     }
   };
 
-  const handleStockToggle = (itemId: number) => {
-    setMenuItems(prev => prev.map(item => {
-      if (item.id === itemId) {
-        const newState = !item.inStock;
-        showToast(`${item.name} is now ${newState ? 'available' : 'out of stock'}.`, 'info');
-        return { ...item, inStock: newState };
-      }
-      return item;
+
+
+const handleRestaurantToggle = async () => {
+  try {
+    const newStatus = await toggleRestaurantStatus(restaurant.id);
+
+    setRestaurant(prev => ({
+      ...prev,
+      online: newStatus,
     }));
-  };
+
+    showToast(
+      `Restaurant is now ${newStatus ? "Online" : "Offline"}`,
+      "info"
+    );
+
+  } catch (error) {
+    console.error(error);
+    showToast("Failed to update restaurant status", "error");
+  }
+};
+
+
+const handleStockToggle = async (itemId: number) => {
+  try {
+    // Call backend
+    const updatedItem = await toggleMenuItemStock(itemId);
+
+    // Update frontend state using backend response
+    setMenuItems(prev =>
+      prev.map(item =>
+        item.id === itemId ? updatedItem : item
+      )
+    );
+
+    showToast(
+      `${updatedItem.name} is now ${
+        updatedItem.inStock ? "available" : "out of stock"
+      }.`,
+      "info"
+    );
+
+  } catch (error) {
+    showToast("Failed to update stock", "error");
+    console.error(error);
+  }
+};
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -202,17 +239,31 @@ const PartnerDashboard: React.FC = () => {
               <span className="text-sm font-bold">{restaurant.rating || 'N/A'}</span>
            </div>
            
-           <button 
-             onClick={() => {
-                const newState = !isOnline;
-                setIsOnline(newState);
-                showToast(`Store is now ${newState ? 'taking orders' : 'closed'}.`, newState ? 'success' : 'info');
-             }}
-             className={`px-6 py-2 rounded-full text-xs font-black transition-all transform active:scale-95 ${isOnline ? 'bg-green-600 text-white shadow-lg shadow-green-500/20' : 'bg-gray-200 text-gray-600'}`}
-           >
-             {isOnline ? 'ONLINE' : 'OFFLINE'}
-           </button>
-           
+         <button
+  onClick={async () => {
+    try {
+      const newStatus = await toggleRestaurantStatus(restaurant.id);
+
+      setIsOnline(newStatus);
+
+      showToast(
+        `Store is now ${newStatus ? "taking orders" : "closed"}.`,
+        newStatus ? "success" : "info"
+      );
+
+    } catch (error) {
+      console.error(error);
+      showToast("Failed to update store status", "error");
+    }
+  }}
+  className={`px-6 py-2 rounded-full text-xs font-black transition-all transform active:scale-95 ${
+    isOnline
+      ? "bg-green-600 text-white shadow-lg shadow-green-500/20"
+      : "bg-gray-200 text-gray-600"
+  }`}
+>
+  {isOnline ? "ONLINE" : "OFFLINE"}
+</button>
            <div className="h-8 w-[1px] bg-gray-200"></div>
            
            <button onClick={() => { logout(); showToast("Dashboard signed out.", "info"); navigate('/partner'); }} className="group p-2 hover:bg-red-50 rounded-lg transition-colors" title="Logout">
