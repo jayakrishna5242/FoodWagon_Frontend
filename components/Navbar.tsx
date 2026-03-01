@@ -194,7 +194,7 @@ const Navbar: React.FC = () => {
           {user ? (
             <Link to="/profile" className="flex items-center gap-2 text-dark hover:text-primary font-medium transition-colors">
               <User className="w-5 h-5" />
-              <span className="hidden sm:inline font-bold">{user.name.split(' ')[0]}</span>
+              <span className="hidden sm:inline font-bold">{user.name}</span>
             </Link>
           ) : (
             <Link to="/login" className="flex items-center gap-2 text-dark hover:text-primary font-medium transition-colors">

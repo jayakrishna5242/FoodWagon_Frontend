@@ -91,16 +91,16 @@ export const loginUser = async (
 
 export const registerUser = async (
   fullName: string,
-  identifier: string,
+  email: string,
+  phone: string,
   password: string
 ): Promise<AuthResponse> => {
-  const isEmail = identifier.includes('@');
 
   const payload = {
     name: fullName,
-    email: isEmail ? identifier : `${identifier}@placeholder.com`,
+    email: email,
     password: password,
-    phone: !isEmail ? identifier : '0000000000',
+    phone: phone,
   };
 
   const response = await fetch(`${BASE_URL}/auth/register`, {
@@ -116,7 +116,9 @@ export const registerUser = async (
 
   const data: AuthResponse = await response.json();
   storeAuthData(data);
+  console.log(data);
   return data;
+
 };
 
 export const loginPartner = async (
